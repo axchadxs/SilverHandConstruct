@@ -1,16 +1,138 @@
-# React + Vite
+# SilverHandConstruct
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+An LLM-powered chatbot that lets you talk to **Johnny Silverhand** from Cyberpunk 2077 in his authentic voice. Built with React + Vite, powered by Groq's free Llama 3.3 API, and trained on hundreds of his actual in-game lines.
 
-Currently, two official plugins are available:
+![SilverHandConstruct](https://img.shields.io/badge/Built%20With-React%20%2B%20Vite-61DAFB?style=flat&logo=react) ![Model](https://img.shields.io/badge/Model-Llama%203.3%2070B-orange?style=flat) ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Character
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Johnny Silverhand** — Rock star. Anti-corpo terrorist. Digital ghost burned into someone else's skull. Samurai frontman. Died storming Arasaka Tower in 2023. Back anyway.
 
-## Expanding the Oxlint configuration
+His system prompt is loaded with hundreds of real lines pulled directly from the Cyberpunk 2077 game script. Temperature runs at `1.0` — maxed out for unpredictability, because that's the character.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## Features
+
+- **Authentic voice** — system prompt trained on Johnny's actual in-game dialogue via few-shot prompting
+- **Streaming responses** — tokens stream in real time as Johnny speaks
+- **Style bank architecture** — built to support multiple characters, easy to extend by adding entries to `src/styles.js`
+- **Hot reload** — changes to the style bank reflect instantly in dev
+
+---
+
+## Tech Stack
+
+- **Frontend** — React 18 + Vite
+- **LLM** — Llama 3.3 70B via [Groq](https://console.groq.com) (free tier)
+- **Styling** — Plain CSS, no UI library
+- **Prompt Engineering** — few-shot prompting with real Cyberpunk 2077 game dialogue
+
+---
+
+## Setup
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/YourUsername/SilverHandConstruct.git
+cd SilverHandConstruct
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Get a free Groq API key
+
+Sign up at [console.groq.com](https://console.groq.com) — free, no credit card required. Gives you access to Llama 3.3 70B with fast inference.
+
+### 4. Add your API key
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and replace the placeholder with your key:
+
+```
+VITE_GROQ_KEY=gsk_your_actual_key_here
+```
+
+### 5. Run the dev server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) and start talking.
+
+---
+
+## How It Works
+
+Johnny's persona is defined in `src/styles.js` as a system prompt injected at the start of every API call. The prompt includes:
+
+- His backstory, worldview, and personality rules
+- Hundreds of real lines from the game as few-shot examples so the model pattern-matches his exact speech rhythm
+- Temperature set to `1.0` for maximum creative unpredictability
+
+The model never sees a "helpful AI assistant" instruction — just Johnny.
+
+---
+
+## Project Structure
+
+```
+SilverHandConstruct/
+├── src/
+│   ├── App.jsx          # Chat UI + Groq streaming logic
+│   ├── App.css          # Styles
+│   ├── styles.js        # Johnny's persona config and system prompt
+│   └── main.jsx         # React entry point
+├── .env.example         # API key template
+├── .gitignore           # Keeps .env out of Git
+└── package.json
+```
+
+---
+
+## Adding More Characters
+
+The style bank in `src/styles.js` is built to be extended. Add a new object to the `STYLES` array:
+
+```js
+{
+  id: "your-character",
+  name: "Character Name",
+  short: "Short Name",
+  avatar: "CN",
+  color: "#hex",
+  bg: "#hex",
+  desc: "One line description.",
+  temperature: 0.85,
+  system: `Your system prompt here.`
+}
+```
+
+A new tab appears in the UI automatically.
+
+---
+
+## Environment Variables
+
+| Variable | Description |
+|---|---|
+| `VITE_GROQ_KEY` | Your Groq API key — get one free at console.groq.com |
+
+Never commit your `.env` file. It's listed in `.gitignore` and will not be pushed to GitHub.
+
+---
+
+## License
+
+MIT — do whatever you want with it. Just don't sell it to Arasaka.
