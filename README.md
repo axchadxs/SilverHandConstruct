@@ -1,6 +1,6 @@
-# SilverHandConstruct
+# SilverHandConstruct https://silver-hand-construct.vercel.app/
 
-An LLM-powered chatbot that lets you talk to **Johnny Silverhand** from Cyberpunk 2077 in his authentic voice. Built with React + Vite, powered by Groq's free Llama 3.3 API, and trained on hundreds of his actual in-game lines.
+An LLM-powered chatbot that lets you talk to **Johnny Silverhand** from Cyberpunk 2077 in his authentic voice. Built with React + Vite, powered by Groq's free Llama 3.3 API, and trained on hundreds of his actual in-game lines. 
 
 ![SilverHandConstruct](https://img.shields.io/badge/Built%20With-React%20%2B%20Vite-61DAFB?style=flat&logo=react) ![Model](https://img.shields.io/badge/Model-Llama%203.3%2070B-orange?style=flat) ![License](https://img.shields.io/badge/License-MIT-green?style=flat) ![App Screenshot](screenshot.png)
 
