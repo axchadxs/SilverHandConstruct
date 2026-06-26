@@ -2,15 +2,15 @@
 
 An LLM-powered chatbot that lets you talk to **Johnny Silverhand** from Cyberpunk 2077 in his authentic voice. Built with React + Vite, powered by Groq's free Llama 3.3 API, and trained on hundreds of his actual in-game lines.
 
-![SilverHandConstruct](https://img.shields.io/badge/Built%20With-React%20%2B%20Vite-61DAFB?style=flat&logo=react) ![Model](https://img.shields.io/badge/Model-Llama%203.3%2070B-orange?style=flat) ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
+![SilverHandConstruct](https://img.shields.io/badge/Built%20With-React%20%2B%20Vite-61DAFB?style=flat&logo=react) ![Model](https://img.shields.io/badge/Model-Llama%203.3%2070B-orange?style=flat) ![License](https://img.shields.io/badge/License-MIT-green?style=flat) ![App Screenshot](screenshot.png)
 
 ---
 
 ## Character
 
-**Johnny Silverhand** — Rock star. Anti-corpo terrorist. Digital ghost burned into someone else's skull. Samurai frontman. Died storming Arasaka Tower in 2023. Back anyway.
+**Johnny Silverhand** — Rock star. Anti-corpo terrorist. Digital ghost burned into someone else's skull. Samurai frontman. Died storming Arasaka Tower in 2023.
 
-His system prompt is loaded with hundreds of real lines pulled directly from the Cyberpunk 2077 game script. Temperature runs at `1.0` — maxed out for unpredictability, because that's the character.
+His system prompt is loaded with hundreds of real lines pulled directly from the Cyberpunk 2077 game script.
 
 ---
 
@@ -79,7 +79,6 @@ Johnny's persona is defined in `src/styles.js` as a system prompt injected at th
 
 - His backstory, worldview, and personality rules
 - Hundreds of real lines from the game as few-shot examples so the model pattern-matches his exact speech rhythm
-- Temperature set to `1.0` for maximum creative unpredictability
 
 The model never sees a "helpful AI assistant" instruction — just Johnny.
 
@@ -98,41 +97,6 @@ SilverHandConstruct/
 ├── .gitignore           # Keeps .env out of Git
 └── package.json
 ```
-
----
-
-## Adding More Characters
-
-The style bank in `src/styles.js` is built to be extended. Add a new object to the `STYLES` array:
-
-```js
-{
-  id: "your-character",
-  name: "Character Name",
-  short: "Short Name",
-  avatar: "CN",
-  color: "#hex",
-  bg: "#hex",
-  desc: "One line description.",
-  temperature: 0.85,
-  system: `Your system prompt here.`
-}
-```
-
-A new tab appears in the UI automatically.
-
----
-
-## Environment Variables
-
-| Variable | Description |
-|---|---|
-| `VITE_GROQ_KEY` | Your Groq API key — get one free at console.groq.com |
-
-Never commit your `.env` file. It's listed in `.gitignore` and will not be pushed to GitHub.
-
----
-
 ## License
 
 MIT — do whatever you want with it. Just don't sell it to Arasaka.
