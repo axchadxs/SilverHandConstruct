@@ -6,11 +6,11 @@ const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
 
 export default function App() {
-  const [style, setStyle] = useState(STYLES[0]);
   const [msgs, setMsgs] = useState([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const style = STYLES[0]; // Johnny only
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -52,7 +52,6 @@ export default function App() {
         throw new Error(err.error?.message || `HTTP ${res.status}`);
       }
 
-      // Handle streaming SSE response
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
@@ -63,13 +62,12 @@ export default function App() {
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
-        buffer = lines.pop(); // keep incomplete line in buffer
+        buffer = lines.pop();
 
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
           const data = line.slice(6).trim();
           if (data === "[DONE]") continue;
-
           try {
             const chunk = JSON.parse(data);
             const delta = chunk.choices?.[0]?.delta?.content || "";
@@ -91,7 +89,7 @@ export default function App() {
       }
     } catch (err) {
       setError(err.message);
-      setMsgs((prev) => prev.slice(0, -1)); // remove empty assistant bubble
+      setMsgs((prev) => prev.slice(0, -1));
     } finally {
       setBusy(false);
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -105,120 +103,138 @@ export default function App() {
     }
   }
 
-  function switchStyle(s) {
-    setStyle(s);
-    setMsgs([]);
-    setError("");
-    setTimeout(() => inputRef.current?.focus(), 50);
-  }
-
   return (
-    <div className="app">
-      {/* Style selector tabs */}
-      <div className="tabs">
-        {STYLES.map((s) => (
-          <button
-            key={s.id}
-            className={`tab ${style.id === s.id ? "active" : ""}`}
-            style={
-              style.id === s.id
-                ? { borderColor: s.color, background: s.bg }
-                : {}
-            }
-            onClick={() => switchStyle(s)}
-          >
-            <span
-              className="tab-name"
-              style={style.id === s.id ? { color: s.color } : {}}
-            >
-              {s.short}
-            </span>
-            <span className="tab-desc">{s.desc}</span>
-          </button>
-        ))}
-        <button
-          className="clear-btn"
-          onClick={() => { setMsgs([]); setError(""); }}
-        >
-          Clear
+    <div className="shell">
+
+      {/* Top bar */}
+      <div className="topbar">
+        <div className="topbar-dots">
+          <span className="dot" />
+          <span className="dot" />
+          <span className="dot" />
+        </div>
+        <div className="topbar-title">SILVERHAND_CONSTRUCT // SESSION_ACTIVE</div>
+        <button className="clear-btn" onClick={() => { setMsgs([]); setError(""); }}>
+          CLR
         </button>
       </div>
 
-      {/* Message feed */}
-      <div className="feed">
-        {msgs.length === 0 && (
-          <div className="empty">
-            <div
-              className="avatar-lg"
-              style={{ background: style.bg, color: style.color }}
-            >
-              {style.avatar}
-            </div>
-            <p className="empty-name">{style.name}</p>
-            <p className="empty-desc">{style.desc}</p>
-            <p className="empty-cta">Say something.</p>
-          </div>
-        )}
+      {/* Main area */}
+      <div className="main">
 
-        {msgs.map((msg, i) => (
-          <div key={i} className={`msg-row ${msg.role}`}>
-            {msg.role === "assistant" && (
-              <div
-                className="avatar"
-                style={{ background: style.bg, color: style.color }}
-              >
-                {style.avatar}
+        {/* Portrait panel */}
+        <div className="portrait-panel">
+          <div className="portrait-frame">
+            {/* 
+              Drop a johnny.jpg into your public/ folder.
+              It will appear here automatically.
+              If no image found, the fallback avatar shows instead.
+            */}
+            <img
+              src="/johnny.jpg"
+              alt="Johnny Silverhand"
+              className="portrait-img"
+              onError={(e) => {
+                e.target.style.display = "none";
+                document.getElementById("portrait-fallback").style.display = "flex";
+              }}
+            />
+            <div id="portrait-fallback" className="portrait-fallback">
+              <div className="portrait-avatar">JS</div>
+              <div className="portrait-hint">Add public/johnny.jpg</div>
+            </div>
+            <div className="scanlines" />
+            <div className="portrait-glow" />
+          </div>
+
+          {/* Stats */}
+          <div className="stats">
+            <div className="stat-row">
+              <span className="stat-key">NAME</span>
+              <span className="stat-val">SILVERHAND</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-key">STATUS</span>
+              <span className="stat-val">ENGRAM</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-key">MODEL</span>
+              <span className="stat-val">LLAMA 3.3</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-key">CTX</span>
+              <span className="stat-val">128K</span>
+            </div>
+            <div className="connection-status">
+              <span className="status-dot" />
+              GROQ CONNECTED
+            </div>
+          </div>
+        </div>
+
+        {/* Dialogue panel */}
+        <div className="dialogue-panel">
+          <div className="dialogue-header">
+            <span>DIALOGUE FEED</span>
+            <span>{msgs.filter(m => m.role === "assistant").length} RESPONSES</span>
+          </div>
+
+          <div className="feed">
+            {msgs.length === 0 && (
+              <div className="empty">
+                <div className="empty-line">// AWAITING INPUT</div>
+                <div className="empty-line muted">Jack in, choom.</div>
               </div>
             )}
-            <div className={`bubble ${msg.role}`}>
-              {msg.content || (
-                busy && i === msgs.length - 1 ? (
-                  <span className="dots">
-                    {[0, 0.18, 0.36].map((d, j) => (
-                      <span
-                        key={j}
-                        className="dot"
-                        style={{
-                          background: style.color,
-                          animationDelay: `${d}s`,
-                        }}
-                      />
-                    ))}
-                  </span>
-                ) : null
-              )}
-            </div>
+
+            {msgs.map((msg, i) => (
+              <div key={i} className={`msg ${msg.role}`}>
+                <div className="msg-label">
+                  {msg.role === "assistant" ? "JOHNNY SILVERHAND" : "YOU"}
+                </div>
+                <div className={`msg-text ${msg.role}`}>
+                  {msg.content || (
+                    busy && i === msgs.length - 1 ? (
+                      <span className="typing">
+                        <span className="tdot" style={{ animationDelay: "0s" }} />
+                        <span className="tdot" style={{ animationDelay: "0.18s" }} />
+                        <span className="tdot" style={{ animationDelay: "0.36s" }} />
+                      </span>
+                    ) : null
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {error && (
+              <div className="error-line">ERR // {error}</div>
+            )}
+
+            <div ref={bottomRef} />
           </div>
-        ))}
 
-        {error && <div className="error">{error}</div>}
-        <div ref={bottomRef} />
-      </div>
-
-      {/* Input bar */}
-      <div className="input-bar">
-        <textarea
-          ref={inputRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={busy}
-          placeholder={`Talk to ${style.name}...`}
-          rows={1}
-          className="input"
-        />
-        <button
-          className="send"
-          onClick={sendMessage}
-          disabled={!input.trim() || busy}
-          style={
-            input.trim() && !busy
-              ? { background: style.color, color: "#fff", border: "none" }
-              : {}
-          }
-        >
-          {busy ? "..." : "Send"}
-        </button>
+          {/* Input */}
+          <div className="input-bar">
+            <span className="prompt-sym">▶</span>
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={busy}
+              placeholder="Say something..."
+              rows={1}
+              className="input"
+            />
+            <button
+              className="send-btn"
+              onClick={sendMessage}
+              disabled={!input.trim() || busy}
+            >
+              {busy ? "..." : "TRANSMIT"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
